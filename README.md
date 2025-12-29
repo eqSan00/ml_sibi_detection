@@ -1,8 +1,8 @@
-# ml_sibi_detection
+# NINGALI ASTA
 
 ## Welcome to ml_sibi_detection!
 
-Welcome to ml_sibi_detection, an innovative web platform dedicated to making Indonesian Sign Language (SIBI) accessible and engaging for everyone. Leveraging cutting-edge machine learning technology, our platform provides an interactive and intuitive medium for learning, practicing, and understanding SIBI, bridging communication gaps and fostering inclusivity.
+Welcome to NINGALI ASTA, an innovative web platform dedicated to making Indonesian Sign Language (SIBI) accessible and engaging for everyone. Leveraging cutting-edge machine learning technology, our platform provides an interactive and intuitive medium for learning, practicing, and understanding SIBI, bridging communication gaps and fostering inclusivity.
 
 Our mission is to empower individuals to learn SIBI effectively through a modern, user-friendly interface, supporting both learners and the deaf community in Indonesia.
 
@@ -14,7 +14,7 @@ Our mission is to empower individuals to learn SIBI effectively through a modern
 
 ## Installation
 
-To get ml_sibi_detection up and running on your local machine, follow these simple steps:
+To get NINGALI ASTA up and running on your local machine, follow these simple steps:
 
 1.  **Clone the repository**
     ```sh
