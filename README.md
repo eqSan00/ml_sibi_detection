@@ -12,6 +12,12 @@ Our mission is to empower individuals to learn SIBI effectively through a modern
 *   **Real-time Sign Detection**: Utilize advanced machine learning models for real-time recognition of SIBI signs, providing instant feedback to learners.
 *   **User-Friendly Interface**: A clean and intuitive web interface ensures a seamless learning experience for users of all ages.
 
+## Hand Landmark Detection
+
+<p align="center">
+  <img src="static/img/landmark.png" width="400" alt="Hand Landmark">
+  <img src="static/img/landmark_detection.png" width="400" alt="Landmark Detection">
+</p>
 ## Installation
 
 To get NINGALI ASTA up and running on your local machine, follow these simple steps:
