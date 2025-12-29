@@ -1,6 +1,6 @@
 # NINGALI ASTA
 
-## Welcome to ml_sibi_detection!
+## Welcome to NINGALI_ASTA!
 
 Welcome to NINGALI ASTA, an innovative web platform dedicated to making Indonesian Sign Language (SIBI) accessible and engaging for everyone. Leveraging cutting-edge machine learning technology, our platform provides an interactive and intuitive medium for learning, practicing, and understanding SIBI, bridging communication gaps and fostering inclusivity.
 
