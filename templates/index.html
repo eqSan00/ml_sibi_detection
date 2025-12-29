@@ -1,52 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <title>Ningali_Asta pendeteksi bahasa isyarat</title>
-  </head>
-  <body>
-    <div class="topnav" id="myTopnav">
-      <div class="logo-container">
-        <img class="logo-img" src="/static/img/hand@3x.png" />
-        <span class="logo-title">Ninggali Asta</span>
-      </div>
-      <div class="nav-right">
-        <a href="/" class="active">Home</a>
-        <a href="/detection">Detection</a>
-        <a href="/alphabet">Alphabet</a>
-        <a href="/about">About</a>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-          <i class="fa fa-bars"></i>
-        </a>
-      </div>
-    </div>
+{% extends "base.html" %}
 
-    <div class="responsive-background">
-        <div style="padding-left: 16px">
-          <h2 class="title">Ningali Asta</h2>
-          <center>
-          <p>
-            Ningali Asta adalah sebuah aplikasi berbasis web yang dirancang
-            untuk mengenali dan menerjemahkan gerakan tangan yang digunakan
-            dalam bahasa isyarat ke dalam huruf alfabet. Aplikasi ini
-            memanfaatkan teknologi machine learning untuk mendeteksi dan
-            memahami berbagai gerakan tangan yang kompleks dan mengubahnya
-            menjadi informasi yang dapat dimengerti oleh orang yang tidak
-            menguasai bahasa isyarat.
-          </p>
-        </center>
-        </div>
+{% block content %}
+<div class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Ningali Asta</h1>
+    <p class="hero-subtitle">
+      Bridge the communication gap with AI-powered Real-Time Sign Language Detection.
+      Translate hand gestures into alphabet instantly.
+    </p>
+    <div class="hero-buttons">
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('detection') }}" class="btn-primary">Start Detection</a>
+      {% else %}
+      <a href="{{ url_for('register') }}" class="btn-primary">Get Started</a>
+      <a href="{{ url_for('login') }}" class="btn-secondary">Login</a>
+      {% endif %}
     </div>
+  </div>
+  <div class="hero-image">
+    <img src="{{ url_for('static', filename='img/hand@3x.png') }}" alt="Sign Language Illustration">
+  </div>
+</div>
 
-    <footer>
-      <p>&copy; 2024 Pendeteksi Bahasa Isyarat.</p>
-    </footer>
-    <script src="/static/js/script.js"></script>
-  </body>
-</html>
+<div class="features">
+  <div class="feature-card">
+    <i class="fas fa-hand-paper feature-icon"></i>
+    <h3>Real-Time Detection</h3>
+    <p>Uses advanced MediaPipe technology to detect hand landmarks instantly.</p>
+  </div>
+  <div class="feature-card">
+    <i class="fas fa-brain feature-icon"></i>
+    <h3>AI Powered</h3>
+    <p>Powered by a custom-trained Neural Network for high accuracy.</p>
+  </div>
+  <div class="feature-card">
+    <i class="fas fa-language feature-icon"></i>
+    <h3>Alphabet Translation</h3>
+    <p>Translates SIBI (Sistem Isyarat Bahasa Indonesia) gestures to text.</p>
+  </div>
+</div>
+{% endblock %}

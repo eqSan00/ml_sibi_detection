@@ -1,110 +1,82 @@
-function myFunction() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
+document.addEventListener('DOMContentLoaded', () => {
+  // Menu Toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
 
-  } else {
-    x.className = "topnav";
-  }
-}
-
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const context = canvas.getContext("2d");
-const captureButton = document.getElementById("capture");
-const socket = io.connect("http://" + document.domain + ":" + location.port);
-const notification = document.createElement("div");
-
-// gaya notifikasi
-notification.id = "notification";
-notification.style.position = "fixed";
-notification.style.bottom = "20px";
-notification.style.right = "20px";
-notification.style.padding = "10px";
-notification.style.backgroundColor = "#4CAF50";
-notification.style.color = "#fff";
-notification.style.borderRadius = "5px";
-notification.style.display = "none";
-document.body.appendChild(notification);
-
-// Access the camera
-if (navigator.mediaDevices.getUserMedia) {
-  navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then(function (stream) {
-      video.srcObject = stream;
-    })
-    .catch(function (error) {
-      console.log("Something went wrong!");
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
     });
-}
+  }
 
-// Akses kamera
-video.addEventListener("play", () => {
-  function sendFrame() {
-    if (video.paused || video.ended) {
-      return;
+  // Detection Logic
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const captureButton = document.getElementById("capture");
+
+  // Only execute if we serve detection page elements
+  if (video && canvas && captureButton) {
+    const context = canvas.getContext("2d");
+
+    // Access the camera
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then(function (stream) {
+          video.srcObject = stream;
+        })
+        .catch(function (error) {
+          console.log("Something went wrong with camera access!", error);
+          alert("Cannot access camera. Please allow camera permissions.");
+        });
     }
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const data = canvas.toDataURL("image/jpeg");
-    const buffer = data.split(",")[1];
-    socket.emit(
-      "video_frame",
-      Uint8Array.from(atob(buffer), (c) => c.charCodeAt(0)).buffer
-    );
-    requestAnimationFrame(sendFrame);
-  }
-  sendFrame();
-});
 
-// 
+    // Capture Button Logic
+    captureButton.addEventListener("click", () => {
+      // Draw current frame to canvas
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-captureButton.addEventListener("click", () => {
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const imageData = canvas.toDataURL("image/jpeg");
+      const imageData = canvas.toDataURL("image/jpeg");
 
-  // Display captured image
-  const capturedImage = document.getElementById("capturedImage");
-  capturedImage.src = imageData;
+      // Display captured image immediately
+      const capturedImage = document.getElementById("capturedImage");
+      if (capturedImage) capturedImage.src = imageData;
 
-  // Kirim URL data ke server menggunakan Fetch API
-  fetch("/process_image", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ image_data: imageData }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Menangani respon dari server Flask
-      console.log("Prediction Result:", data);
+      const predictionText = document.getElementById("prediction");
+      if (predictionText) predictionText.innerText = "Processing...";
 
-      // Menampilkan gambar yang diprediksi
-      document.getElementById("predictedImage").src =
-        "data:image/jpeg;base64," + data.annotated_image;
+      // Send to server
+      fetch("/process_image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image_data: imageData }),
+      })
+        .then((response) => {
+          if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data) return;
 
-      // Menampilkan kelas yang diprediksi
-      document.getElementById("prediction").textContent =
-        "Predicted Class: " + data.predicted_class;
+          console.log("Prediction Result:", data);
 
-      // Tampilkan pemberitahuan
-      notification.textContent = "Gambar berhasil diproses!";
-      notification.style.display = "block";
+          // Update UI
+          const predictedImg = document.getElementById("predictedImage");
+          if (predictedImg) predictedImg.src = "data:image/jpeg;base64," + data.annotated_image;
 
-      // Sembunyikan notifikasi setelah beberapa detik
-      setTimeout(() => {
-        notification.style.display = "none";
-       }, 3000); 
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      // Menampilkan pemberitahuan kesalahan jika diperlukan
-      notification.textContent = "Terjadi kesalahan saat memproses gambar.";
-      notification.style.backgroundColor = "#f44336"; 
-      notification.style.display = "block";
-      setTimeout(() => {
-        notification.style.display = "none";
-      }, 3000); 
+          if (predictionText) predictionText.textContent = data.predicted_class;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          if (predictionText) predictionText.innerText = "Error";
+        });
     });
+  }
 });

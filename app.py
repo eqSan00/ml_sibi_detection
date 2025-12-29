@@ -1,15 +1,33 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import cv2 as cv
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
-import keras
-from tensorflow import keras   # type: ignore
-import base64   
+from tensorflow import keras
+import base64
 import os
-
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'thisisasecretkey' # Change this in production
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+
+db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # Buat direktori untuk menyimpan gambar sementara
 temp_dir = "temp"
@@ -17,7 +35,12 @@ os.makedirs(temp_dir, exist_ok=True)
 
 # Muat model 
 model_path = "model.h5"
-model = keras.models.load_model(model_path)
+# Handling model loading error silently or safely if model doesn't exist yet
+if os.path.exists(model_path):
+    model = keras.models.load_model(model_path)
+else:
+    print(f"Warning: Model file {model_path} not found.")
+    model = None
 
 # Fungsi untuk mengekstrak fitur dari suatu gambar
 def extract_feature(input_image_path):
@@ -48,6 +71,8 @@ def extract_feature(input_image_path):
 
 # Fungsi untuk memprediksi kelas dari fitur yang diekstraksi
 def predict_class(features, model):
+    if model is None:
+        return "Model Error"
     prediction = model.predict(features)
     class_index = np.argmax(prediction)
     classes = {
@@ -62,6 +87,9 @@ def predict_class(features, model):
 # Jalur memproses gambar yang diunggah dan mengembalikan hasil prediksi
 @app.route('/process_image', methods=['POST'])
 def process_image():
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'Unauthorized'}), 401
+
     data = request.get_json()
     image_data = data['image_data']
 
@@ -89,12 +117,60 @@ def process_image():
         'message': message
     })
 
-# Rute untuk menyajikan file HTML Anda
+# Auth Routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        remember = True if request.form.get('remember') else False
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user or not check_password_hash(user.password, password):
+            flash('Please check your login details and try again.')
+            return redirect(url_for('login'))
+
+        login_user(user, remember=remember)
+        return redirect(url_for('index'))
+
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            flash('Email address already exists')
+            return redirect(url_for('register'))
+
+        new_user = User(email=email, name=name, password=generate_password_hash(password, method='scrypt'))
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+# Pages
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/detection')
+@login_required
 def detection():
     return render_template('detection.html')
 
@@ -107,5 +183,6 @@ def alphabet():
     return render_template('alphabet.html')
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
-

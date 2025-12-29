@@ -1,77 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <title>Ningali Asta - Pendeteksi Bahasa Isyarat</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  </head>
-  <body>
-    <div class="topnav" id="myTopnav">
-      <div class="logo-container">
-        <img class="logo-img" src="/static/img/hand@3x.png" />
-        <span class="logo-title">Ninggali Asta</span>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="detection-container">
+  <h1 class="page-title">Sign Language Detection</h1>
+
+  <div class="detection-grid">
+    <div class="camera-section">
+      <div class="video-wrapper">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" style="display: none;"></canvas>
       </div>
-      <div class="nav-right">
-        <a href="/">Home</a>
-        <a href="/detection" class="active">Detection</a>
-        <a href="/alphabet">Alphabet</a>
-        <a href="/about">About</a>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-          <i class="fa fa-bars"></i>
-        </a>
-      </div>
+      <button id="capture" class="btn-capture">
+        <i class="fas fa-camera"></i> Capture & Translate
+      </button>
     </div>
 
-    <div class="outer-box">
-      <h1 class="title">Detection</h1>
+    <div class="results-section">
+      <div class="result-card">
+        <h3>Prediction Result</h3>
+        <div class="prediction-box">
+          <span id="prediction" class="prediction-text">Waiting for input...</span>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>Annotated View</h3>
+        <div class="image-preview">
+          <img id="predictedImage" src="{{ url_for('static', filename='img/hand@3x.png') }}" alt="Predicted View">
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>Captured Image</h3>
+        <div class="image-preview">
+          <img id="capturedImage" src="{{ url_for('static', filename='img/hand@3x.png') }}" alt="Captured Image">
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <article
-      class="outer-box"
-      style="background: linear-gradient(to bottom, #fff, #0cba00 90%)"
-    > 
-    <div class="inner-box">
-        <h2>Live Detection</h2>
-        <div class="video-container">
-          <video id="video" autoplay></video>
-          <canvas
-            id="canvas"
-            style="display: none"
-            width="400"
-            height="300"
-          ></canvas>
-        </div>
-        <button class="button" id="capture">Capture Photo</button>
-      </div>
-
-      <div class="inner-box">
-        <h2>Detection results</h2>
-        <div class="detected-letters">
-          <span id="letter">
-            <img id="predictedImage" src="" alt="Predicted Image" />
-          </span>
-          <span id="prediction"></span>
-        </div>
-      </div>
-
-      <div class="inner-box">
-        <h1>Save Captured Photo</h1>
-        <div id="imageContainer">
-          <img id="capturedImage" src="" alt="Captured Image" />
-        </div>
-      </div>
-    </article>
-
-    <footer>
-      <p>&copy; 2024 Pendeteksi Bahasa Isyarat. Semua Hak Dilindungi.</p>
-    </footer>
-
-    <script src="/static/js/script.js"></script>
-  </body>
-</html>
+<!-- Socket.IO is removed as backend doesn't support it, script.js should handle fetch -->
+{% endblock %}
