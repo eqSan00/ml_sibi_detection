@@ -18,7 +18,7 @@ To get NINGALI ASTA up and running on your local machine, follow these simple st
 
 1.  **Clone the repository**
     ```sh
-    git clone https://github.com/eqSan00/ml_sibi_detection.git
+    [git clone https://github.com/eqSan00/ningali_asta_detection]
     ```
 2.  **Navigate into the project directory**
     ```sh
