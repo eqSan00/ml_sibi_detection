@@ -38,6 +38,6 @@ To get ml_sibi_detection up and running on your local machine, follow these simp
     pip install -r requirements.txt
     ```
 
-## 🚀 Getting Started
+## Getting Started
 
 Once installed, you can run the application (e.g., `python app.py` or similar command, please specify if available) to start your SIBI learning journey!
