@@ -15,9 +15,8 @@ Our mission is to empower individuals to learn SIBI effectively through a modern
 ## Hand Landmark Detection
 
 <p align="center">
-  <p><img src="static/img/landmark.png" width="400" alt="Hand Landmark"></P>
-  
-  <img src="static/img/landmark_detection.png" width="400" alt="Landmark Detection">
+  <p><img src="static/img/landmark.png" width="1000" alt="Hand Landmark"></P>
+  <P><img src="static/img/landmark_detection.png" width="1000" alt="Landmark Detection"></P>
 </p>
 ## Installation
 
